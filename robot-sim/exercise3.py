@@ -67,7 +67,7 @@ def turn(speed, seconds):
     R.motors[0].m0.power = 0
     R.motors[0].m1.power = 0
 
-def find_token():
+def find_token(color):
     """
     Function to find the closest token
 
@@ -75,34 +75,48 @@ def find_token():
 	dist (float): distance of the closest token (-1 if no token is detected)
 	rot_y (float): angle between the robot and the token (-1 if no token is detected)
     """
+    if(color == "silver"):
+        m = MARKER_TOKEN_SILVER
+    elif(color == "gold"):
+        m = MARKER_TOKEN_GOLD
+
     dist=100
     for token in R.see():
-        if token.dist < dist:
+        if token.dist < dist and token.info.marker_type == m:
             dist=token.dist
 	    rot_y=token.rot_y
     if dist==100:
-	return -1, -1
+	    return -1, -1
     else:
-   	return dist, rot_y
+   	    return dist, rot_y
 
 
-while 1:
-    dist, rot_y = find_token()  # we look for markers
-    if dist==-1:
-        print("I don't see any token!!")
-	exit()  # if no markers are detected, the program ends
-    elif dist <d_th: 
-        print("Found it!")
-        R.grab() # if we are close to the token, we grab it.
-        print("Gotcha!") 
-        exit()
-    elif -a_th<= rot_y <= a_th: # if the robot is well aligned with the token, we go forward
-        print("Ah, here we are!.")
-        drive(10, 0.5)
-    elif rot_y < -a_th: # if the robot is not well aligned with the token, we move it on the left or on the right
-        print("Left a bit...")
-        turn(-2, 0.5)
-    elif rot_y > a_th:
-        print("Right a bit...")
-        turn(+2, 0.5)
+token_to_find = "silver"
 
+while(1):
+    print("Looking for a", token_to_find, "token...\n")
+    dist, rot_y = find_token(token_to_find)
+
+    if(dist == -1 or rot_y == -1):
+        turn(20,0.001)
+
+    elif(dist <= d_th):
+        R.grab()
+        turn(10, 4)
+        drive(20, 2)
+        R.release()
+        drive(-20, 2)
+        turn(-10, 4)
+
+        if(token_to_find == "silver"):
+            token_to_find = "gold"
+        else:
+            token_to_find = "silver"
+
+    elif(rot_y <= a_th and rot_y >= -a_th):
+        velocity = dist*25 #Proportional velocity to the distance
+        drive(velocity,0.1)
+    
+    elif(rot_y > a_th or rot_y < -a_th):
+        sign = a_th/abs(a_th)
+        turn(sign*5, 0.001)

@@ -1,4 +1,5 @@
 from __future__ import print_function
+#from ast import main
 import time
 from sr.robot import *
 
@@ -44,5 +45,19 @@ def turn(speed, seconds):
     R.motors[0].m0.power = 0
     R.motors[0].m1.power = 0
 
-#here goes the code
-	
+def circle(speed, seconds):
+    """
+    Function for setting an angular velocity
+    
+    Args: speed (int): the speed of the wheels
+	  seconds (int): the time interval
+    """
+    R.motors[0].m0.power = speed
+    R.motors[0].m1.power = 0
+    time.sleep(seconds)
+    R.motors[0].m0.power = 0
+    R.motors[0].m1.power = 0
+
+drive(50,2)
+turn(20, 2)
+circle(30,5)

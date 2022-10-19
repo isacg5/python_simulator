@@ -1,5 +1,8 @@
 from __future__ import print_function
+from cmath import sqrt
+from dis import dis
 
+import sys
 import time
 from sr.robot import *
 
@@ -70,11 +73,67 @@ def find_token():
     for token in R.see():
         if token.dist < dist:
             dist=token.dist
-	    rot_y=token.rot_y
+        rot_y=token.rot_y
     if dist==100:
         return -1, -1
     else:
         return dist, rot_y
 
 #here goes the code
-	
+
+while(1):
+    dist, rot_y = find_token()
+
+    print(dist, rot_y)
+
+    if(dist == -1 and rot_y == -1):
+        print("Not tokens found")
+        exit()
+
+    elif(dist <= d_th):
+        R.grab()
+        exit()
+
+    elif(rot_y <= a_th and rot_y >= -a_th):
+        velocity = dist*25 #Proportional velocity to the distance
+        drive(velocity,0.1)
+    
+    elif(rot_y > a_th or rot_y < -a_th):
+        sign = a_th/abs(a_th)
+        turn(sign*5, 0.001)
+
+
+    
+
+
+
+
+# while(rot_y > a_th or rot_y < -a_th):
+#     sign = a_th/abs(a_th)
+#     turn(sign*20, 0.001)
+#     dist, rot_y = find_token()
+#     print(d_th, dist)
+    
+# while(dist > d_th):
+#     velocity = dist*25
+#     drive(velocity,0.001)
+#     dist, rot_y = find_token()
+#     print(d_th, dist)
+
+
+# R.grab()
+# exit()
+
+
+# while(rot_y > a_th):
+#     turn(20,0.001)
+#     dist, rot_y = find_token()
+#     print(a_th, rot_y)
+
+# while(dist > d_th):
+#     drive(20,0.001)
+#     dist, rot_y = find_token()
+#     print(d_th, dist)
+
+# R.grab()
+
